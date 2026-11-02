@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>策禪東漢——海島篇</title>
+<style>
+:root{
+  --bg:#e3eae5;--card:#f1edd9;--card2:#e7e2c8;--ink:#16302f;--muted:#5b6c66;--line:#b7c2b6;
+  --patina:#2b7a6d;--tide:#1f5668;--cinnabar:#b8352a;--shadow:0 12px 30px rgba(18,48,47,.16);
+  --c-hunger:#b8832a;--c-water:#2f86a8;--c-sanity:#7a63a8;--c-stamina:#4f9450;--c-aff:#bf4468;--c-sun:#c96b36;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#09191d;--card:#12262a;--card2:#183036;--ink:#e8e2cb;--muted:#94a39d;--line:#2b3d41;
+    --patina:#62b8a6;--tide:#6fb2cc;--cinnabar:#e4634f;--shadow:0 12px 30px rgba(0,0,0,.5);
+    --c-hunger:#dba43f;--c-water:#58b0d6;--c-sanity:#a089d4;--c-stamina:#78b974;--c-aff:#e5688c;--c-sun:#eb8d55;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#09191d;--card:#12262a;--card2:#183036;--ink:#e8e2cb;--muted:#94a39d;--line:#2b3d41;
+  --patina:#62b8a6;--tide:#6fb2cc;--cinnabar:#e4634f;--shadow:0 12px 30px rgba(0,0,0,.5);
+  --c-hunger:#dba43f;--c-water:#58b0d6;--c-sanity:#a089d4;--c-stamina:#78b974;--c-aff:#e5688c;--c-sun:#eb8d55;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.7;
+  -webkit-text-size-adjust:100%;}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);}
+[hidden]{display:none!important;}
+.serif{font-family:"Noto Serif TC","Songti TC","STSong","PMingLiU",serif;}
+button{font:inherit;color:inherit;}
+.wrap{max-width:540px;margin:0 auto;padding:10px 14px 48px;}
+.top{display:flex;align-items:center;justify-content:space-between;padding:4px 2px 10px;}
+.brand{font-weight:700;font-size:15px;letter-spacing:.14em;}
+.brand small{margin-left:8px;font-size:12px;font-weight:500;color:var(--patina);letter-spacing:.08em;}
+.top-r{display:flex;align-items:center;gap:10px;}
+#dayTag{font-size:13px;color:var(--muted);}
+.ghost{min-height:40px;padding:0 14px;border:1px solid var(--line);background:transparent;border-radius:3px;cursor:pointer;}
+.ghost:hover{background:var(--card2);}
+:focus-visible{outline:3px solid var(--tide);outline-offset:2px;}
+
+/* 首頁 */
+.hero{position:relative;overflow:hidden;border-radius:6px;box-shadow:var(--shadow);background:#0d1830;}
+.hero svg,.scene svg{display:block;width:100%;height:auto;}
+.hero-art svg{aspect-ratio:400/230;}
+.vtitle{position:absolute;left:18px;top:14px;margin:0;display:flex;flex-direction:row-reverse;gap:10px;
+  writing-mode:vertical-rl;color:#fdf3df;text-shadow:0 2px 14px rgba(0,0,0,.45);font-family:"Noto Serif TC","Songti TC","STSong","PMingLiU",serif;}
+.vmain{font-size:44px;font-weight:900;letter-spacing:.2em;line-height:1.1;}
+.vsub{font-size:18px;font-weight:600;letter-spacing:.35em;margin-top:42px;opacity:.92;}
+.blurb{margin:18px 2px 16px;font-size:15px;}
+.menu-btns{display:grid;gap:10px;}
+.btn{min-height:50px;padding:10px 18px;border:1px solid var(--line);background:var(--card);border-radius:3px;cursor:pointer;font-weight:600;letter-spacing:.06em;}
+.btn:hover{background:var(--card2);}
+.btn.primary{background:var(--patina);border-color:var(--patina);color:#fff;}
+:root[data-theme="dark"] .btn.primary{color:#06201b;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#06201b;}}
+.btn.primary:hover{filter:brightness(1.06);}
+
+/* 遊戲畫面 */
+.scene{border-radius:6px;overflow:hidden;box-shadow:var(--shadow);background:#0d1830;}
+.scene svg{aspect-ratio:400/190;}
+.hud{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:10px 0 4px;}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 12px;}
+.stat-top{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);}
+.stat-top b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:2px;}
+.bar i{display:block;height:100%;background:var(--c);transition:width .4s ease;}
+.stat.low .stat-top b{color:var(--cinnabar);}
+.stat.low .bar i{background:var(--cinnabar);animation:pulse 1s ease-in-out infinite;}
+.deltas{min-height:26px;display:flex;flex-wrap:wrap;gap:6px;padding-top:6px;}
+.chip{font-size:12px;padding:1px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-variant-numeric:tabular-nums;}
+.chip.up{color:var(--c-stamina);border-color:var(--c-stamina);}
+.chip.down{color:var(--cinnabar);border-color:var(--cinnabar);}
+.chip.prog{color:var(--tide);border-color:var(--tide);}
+
+/* 對話：竹簡 */
+.slip{position:relative;margin-top:10px;padding:14px 16px 26px;min-height:132px;cursor:pointer;border:1px solid var(--line);border-radius:3px;
+  background:repeating-linear-gradient(90deg,transparent 0,transparent 46px,rgba(80,70,30,.09) 46px,rgba(80,70,30,.09) 47px),var(--card);
+  box-shadow:var(--shadow);}
+.slip::before,.slip::after{content:"";position:absolute;left:0;right:0;height:3px;background:var(--patina);opacity:.55;}
+.slip::before{top:0;}.slip::after{bottom:0;}
+.who{display:flex;align-items:center;gap:10px;margin-bottom:6px;font-weight:700;letter-spacing:.1em;}
+.seal{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:4px;color:#fff;font-size:17px;font-weight:900;
+  font-family:"Noto Serif TC","Songti TC","STSong","PMingLiU",serif;}
+.seal.sun{background:var(--cinnabar);}
+.seal.me{background:var(--patina);}
+:root[data-theme="dark"] .seal.me{color:#06201b;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seal.me{color:#06201b;}}
+.seal.nar{background:var(--muted);}
+.said{margin:0;font-size:16px;line-height:1.95;font-family:"Noto Serif TC","Songti TC","STSong","PMingLiU",serif;white-space:pre-wrap;}
+.more{position:absolute;right:14px;bottom:6px;font-size:12px;color:var(--muted);animation:nudge 1.4s ease-in-out infinite;}
+.choices{margin-top:12px;}
+.opt{display:block;width:100%;text-align:left;min-height:50px;padding:10px 14px 10px 18px;margin:0 0 8px;border:1px solid var(--line);
+  border-left:5px solid var(--patina);background:var(--card);border-radius:3px;cursor:pointer;line-height:1.5;}
+.opt:hover:not(:disabled){background:var(--card2);}
+.opt:disabled{opacity:.55;cursor:not-allowed;border-left-color:var(--line);}
+.opt .l{display:block;font-weight:600;}
+.opt .s{display:block;font-size:12px;color:var(--muted);margin-top:1px;}
+
+/* 結局 */
+.end-card{padding:26px 20px 22px;border:1px solid var(--line);border-radius:6px;background:var(--card);box-shadow:var(--shadow);}
+.tag{display:inline-block;padding:2px 12px;border-radius:12px;font-size:13px;font-weight:700;color:#fff;letter-spacing:.1em;}
+.tag.good{background:#9a7418;}.tag.neutral{background:var(--tide);}.tag.bad{background:var(--cinnabar);}
+:root[data-theme="dark"] .tag{color:#10181a;}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag{color:#10181a;}}
+.end-title{margin:12px 0 14px;font-size:34px;line-height:1.25;letter-spacing:.12em;font-weight:900;}
+.end-body p{margin:0 0 14px;font-size:16px;line-height:2;}
+.end-sum{display:flex;flex-wrap:wrap;gap:6px;margin:16px 0 18px;}
+.end-btns{display:grid;gap:10px;}
+.count{margin:0 0 14px;font-size:13px;color:var(--muted);}
+
+/* 疊層 */
+.overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,14,16,.62);}
+.sheet{width:100%;max-width:540px;max-height:86vh;overflow:auto;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));background:var(--bg);border-radius:12px 12px 0 0;}
+.sheet h2{margin:0 0 12px;font-size:20px;letter-spacing:.1em;}
+.sheet .btn{margin-bottom:8px;width:100%;}
+.gal{display:grid;gap:8px;margin-bottom:12px;}
+.gi{padding:10px 14px;border:1px solid var(--line);border-left:5px solid var(--line);border-radius:3px;background:var(--card);}
+.gi.on.good{border-left-color:#9a7418;}.gi.on.neutral{border-left-color:var(--tide);}.gi.on.bad{border-left-color:var(--cinnabar);}
+.gi b{display:block;}.gi span{font-size:12px;color:var(--muted);}
+.gi:not(.on){opacity:.6;}
+
+/* 場景動畫 */
+.wv1{animation:wv 7s linear infinite;}.wv2{animation:wv 11s linear infinite reverse;}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:fl .45s ease-in-out infinite alternate;}
+.tw{animation:tw 3.2s ease-in-out infinite;}
+.smoke{animation:sm 5s ease-out infinite;}
+.rain{stroke:#cfe3ee;stroke-width:1;opacity:.7;animation:rn .65s linear infinite;}
+.heart{animation:hv 2.4s ease-in-out infinite;}
+@keyframes wv{to{transform:translateX(-40px);}}
+@keyframes fl{from{transform:scale(1,.88);}to{transform:scale(1.08,1.1);}}
+@keyframes tw{0%,100%{opacity:.35;}50%{opacity:1;}}
+@keyframes sm{0%{opacity:0;transform:translateY(0);}20%{opacity:.7;}100%{opacity:0;transform:translateY(-34px);}}
+@keyframes rn{from{transform:translate(0,-12px);}to{transform:translate(-8px,70px);}}
+@keyframes hv{0%,100%{transform:translateY(0);opacity:.7;}50%{transform:translateY(-5px);opacity:1;}}
+@keyframes pulse{50%{opacity:.45;}}
+@keyframes nudge{50%{transform:translateY(3px);}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand serif">策禪東漢<small>海島篇</small></div>
+    <div class="top-r"><span id="dayTag" hidden></span><button class="ghost" id="menuBtn" type="button">選單</button></div>
+  </header>
+
+  <section id="screen-title">
+    <div class="hero">
+      <div class="hero-art" id="heroArt"></div>
+      <h1 class="vtitle"><span class="vmain">策禪東漢</span><span class="vsub">海島篇</span></h1>
+    </div>
+    <p class="blurb">建安五年，風暴吞沒了樓船。荒島之上，只剩江東小霸王孫策，和你——劉燕。<br>餓、渴、野獸與人心，每個選擇都會通向不同的結局。</p>
+    <div class="menu-btns">
+      <button class="btn primary" id="btnStart" type="button">開始遊戲</button>
+      <button class="btn" id="btnContinue" type="button" hidden>繼續上次的進度</button>
+      <button class="btn" id="btnGallery" type="button">結局圖鑑</button>
+    </div>
+  </section>
+
+  <section id="screen-game" hidden>
+    <div class="scene" id="scene" aria-hidden="true"></div>
+    <div class="hud">
+      <div class="stats" id="stats"></div>
+      <div class="deltas" id="deltas" aria-live="polite"></div>
+    </div>
+    <div class="slip" id="dialogue" role="button" tabindex="0" aria-label="點擊繼續對話">
+      <div class="who"><span class="seal nar" id="seal">述</span><span id="who">旁白</span></div>
+      <p class="said" id="text"></p>
+      <span class="more" id="more" hidden>點擊繼續</span>
+    </div>
+    <div class="choices" id="choices"></div>
+  </section>
+
+  <section id="screen-end" hidden>
+    <div class="end-card">
+      <span class="tag" id="endTag"></span>
+      <h2 class="end-title serif" id="endTitle"></h2>
+      <div class="end-body serif" id="endBody"></div>
+      <div class="end-sum" id="endSum"></div>
+      <p class="count" id="endCount"></p>
+      <div class="end-btns">
+        <button class="btn primary" id="btnAgain" type="button">再玩一次</button>
+        <button class="btn" id="btnEndGallery" type="button">結局圖鑑</button>
+        <button class="btn" id="btnEndTitle" type="button">回到標題</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="menuOv" hidden>
+  <div class="sheet" role="dialog" aria-label="選單">
+    <h2 class="serif">選單</h2>
+    <button class="btn" id="mTitle" type="button">回到標題（進度已自動保存）</button>
+    <button class="btn" id="mGallery" type="button">結局圖鑑</button>
+    <button class="btn" id="mRestart" type="button">重新開始</button>
+    <button class="btn" id="mClose" type="button">關閉</button>
+  </div>
+</div>
+
+<div class="overlay" id="galOv" hidden>
+  <div class="sheet" role="dialog" aria-label="結局圖鑑">
+    <h2 class="serif">結局圖鑑</h2>
+    <div class="gal" id="galList"></div>
+    <button class="btn" id="galClose" type="button">關閉</button>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const rand=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const chance=p=>Math.random()<p;
+const clamp=(v,a,b)=>Math.max(a===undefined?0:a,Math.min(b===undefined?100:b,v));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const N=t=>['nar',t],Y=t=>['me',t],C=t=>['sun',t];
+const SAVE_KEY='ce_island_save_v1',END_KEY='ce_island_ends_v1';
+const reduceMotion=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const LOVE=85;
+
+const TTL=24*60*60*1000; // 存檔與圖鑑只保留一天，超過就自動清掉
+const store={
+  get(k){try{const r=JSON.parse(localStorage.getItem(k));
+    if(!r||typeof r!=='object'||typeof r.t!=='number')return null;
+    if(Date.now()-r.t>TTL){localStorage.removeItem(k);return null;}
+    return r.v;}catch(e){return null;}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify({t:Date.now(),v:v}));}catch(e){}},
+  del(k){try{localStorage.removeItem(k);}catch(e){}}
+};
+
+const STATS=[
+  {k:'hunger',n:'飽食度',c:'--c-hunger'},
+  {k:'water',n:'水分',c:'--c-water'},
+  {k:'sanity',n:'精神',c:'--c-sanity'},
+  {k:'stamina',n:'體力',c:'--c-stamina'},
+  {k:'affection',n:'好感度',c:'--c-aff'},
+  {k:'sunHp',n:'孫策體況',c:'--c-sun'}
+];
+const PROG={shelter:'居所',signal:'信號堆',raft:'木筏'};
+const PMAX={shelter:3,signal:3,raft:4};
+const ENDS_ORDER=['good_stay','good_leave','neutral_ship','bad_sun','bad_you','bad_both'];
+
+function newState(){return{day:1,slot:0,hunger:55,water:50,sanity:70,stamina:70,affection:20,sunHp:50,
+  fire:false,spring:false,grove:false,spear:false,lookout:false,ship:false,
+  prog:{shelter:0,signal:0,raft:0},explore:0,talks:0,honest:false,tutor:false,
+  beast:null,beastNext:'AFTER',lastHarm:null,cause:null,over:false};}
+
+let S=newState(),cur=null,queue=[],typing=null,typedDone=null,fullText='',choicesShown=false,currentChoices=[],
+    locked=false,curMood='dusk',endedId=null,deltaT=null,restartArmed=false;
+const SCENES={};
+const SAVE_IDS={STORY:1,ACTIONS:1,NIGHT:1,CLIMAX:1};
+
+/* ---------- 場景繪圖 ---------- */
+const STARS=[[30,20],[70,40],[120,16],[170,34],[210,12],[250,44],[290,22],[340,36],[370,14],[50,70],[150,62],[260,70],[330,64],[20,48],[390,52]];
+function sceneSVG(m,o){
+  o=o||{};
+  const skies={dawn:['#f4a47b','#fde1b5'],day:['#58aadc','#cfeaf6'],dusk:['#c9585a','#f3b46d'],night:['#0b1630','#243566'],storm:['#313d47','#66747f']};
+  const seas={dawn:['#5a93a6','#2a6277'],day:['#2f86a3','#1b5873'],dusk:['#7a4f70','#383d66'],night:['#0b2236','#14324c'],storm:['#3a525f','#253843']};
+  const sk=skies[m]||skies.day,se=seas[m]||seas.day;
+  const fire=o.fire||S.fire,sh=o.shelter!==undefined?o.shelter:S.prog.shelter,sg=S.prog.signal,rf=S.prog.raft;
+  let sky='';
+  if(m==='night'){
+    sky+=STARS.map(p=>'<circle class="tw" cx="'+p[0]+'" cy="'+p[1]+'" r="1.1" fill="#fff"/>').join('');
+    sky+='<circle cx="318" cy="38" r="15" fill="#f3eed6"/><circle cx="325" cy="34" r="13" fill="'+sk[0]+'"/>';
+  }else if(m==='dawn'){sky+='<circle cx="290" cy="106" r="24" fill="#ffe7ae"/>';}
+  else if(m==='day'){sky+='<circle cx="322" cy="38" r="28" fill="#fff3bd" opacity=".28"/><circle cx="322" cy="38" r="18" fill="#fff3bd"/><ellipse cx="90" cy="40" rx="30" ry="7" fill="#fff" opacity=".7"/><ellipse cx="112" cy="34" rx="20" ry="6" fill="#fff" opacity=".7"/><ellipse cx="240" cy="62" rx="26" ry="6" fill="#fff" opacity=".6"/>';}
+  else if(m==='dusk'){sky+='<circle cx="96" cy="106" r="26" fill="#ffb069"/><ellipse cx="260" cy="48" rx="34" ry="6" fill="#ffd9a8" opacity=".5"/>';}
+  else if(m==='storm'){
+    sky+='<ellipse cx="80" cy="30" rx="70" ry="22" fill="#222c34"/><ellipse cx="200" cy="22" rx="90" ry="24" fill="#1d262d"/><ellipse cx="330" cy="34" rx="70" ry="22" fill="#222c34"/>';
+    for(let i=0;i<26;i++){const x=(i*17)%400,y=(i*29)%90;sky+='<line class="rain" x1="'+x+'" y1="'+y+'" x2="'+(x-4)+'" y2="'+(y+12)+'" style="animation-delay:'+(-(i%7)*.09)+'s"/>';}
+  }
+  let wave='M-40 122';for(let i=0;i<12;i++)wave+=' q20 -6 40 0';
+  let wave2='M-40 134';for(let i=0;i<12;i++)wave2+=' q20 5 40 0';
+  const palm=(x,y,h)=>'<path d="M'+x+' '+y+' Q'+(x+7)+' '+(y-h/2)+' '+(x-3)+' '+(y-h)+'" stroke="#5a3d22" stroke-width="4" fill="none" stroke-linecap="round"/>'
+    +'<g stroke="#2d7a45" stroke-width="5" fill="none" stroke-linecap="round"><path d="M'+(x-3)+' '+(y-h)+' q-20 -4 -30 10"/><path d="M'+(x-3)+' '+(y-h)+' q-16 -14 -34 -10"/><path d="M'+(x-3)+' '+(y-h)+' q4 -18 24 -20"/><path d="M'+(x-3)+' '+(y-h)+' q18 -8 32 4"/><path d="M'+(x-3)+' '+(y-h)+' q14 2 22 16"/></g>';
+  let props='';
+  if(sh>0){
+    props+='<polygon points="146,156 168,126 192,156" fill="#8a6a3c" stroke="#5a3f1f" stroke-width="1.5"/>';
+    if(sh>=2)props+='<polygon points="142,156 168,120 196,156" fill="#3f8a4f" opacity=".85"/>';
+    if(sh>=3)props+='<rect x="150" y="144" width="38" height="12" fill="#7a5a30"/>';
+  }
+  if(sg>0){
+    props+='<g stroke="#5a3f1f" stroke-width="2"><line x1="96" y1="158" x2="104" y2="'+(150-sg*4)+'"/><line x1="112" y1="158" x2="104" y2="'+(150-sg*4)+'"/><line x1="104" y1="158" x2="104" y2="'+(148-sg*4)+'"/></g>';
+    if(S.ship)props+='<path class="smoke" d="M104 '+(146-sg*4)+' q-8 -10 0 -20 q8 -10 0 -20" stroke="#d9d9d9" stroke-width="5" fill="none" opacity=".7"/>';
+  }
+  if(rf>0){for(let i=0;i<rf;i++)props+='<rect x="'+(278+i*14)+'" y="162" width="12" height="24" rx="3" fill="#9b7443" stroke="#5a3f1f"/>';if(rf>=4)props+='<line x1="278" y1="170" x2="334" y2="170" stroke="#e5d6a8" stroke-width="2"/>';}
+  if(fire){
+    props+='<circle cx="214" cy="150" r="30" fill="#ff9a3a" opacity="'+(m==='night'||m==='dusk'?'.22':'.08')+'"/>'
+      +'<rect x="204" y="156" width="20" height="4" rx="2" fill="#4a3220"/>'
+      +'<g class="flame"><path d="M214 158 C206 150 210 142 214 134 C218 142 222 150 214 158Z" fill="#ff8a2a"/><path d="M214 158 C210 153 212 148 214 143 C216 148 218 153 214 158Z" fill="#ffd36a"/></g>';
+  }
+  props+='<circle cx="246" cy="139" r="4.5" fill="#2b1d1a"/><path d="M240 144 h12 l2 18 h-16 z" fill="#8a2f24"/>'
+    +'<circle cx="259" cy="142" r="4" fill="#2b1d1a"/><path d="M254 146 h10 l2 16 h-14 z" fill="#2a6a70"/>';
+  if(S.affection>=LOVE)props+='<text class="heart" x="249" y="126" font-size="10" fill="#e0607e">♥</text>';
+  return '<svg viewBox="0 0 400 '+(o.h||190)+'" preserveAspectRatio="xMidYMid slice" role="img" aria-label="荒島場景">'
+    +'<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+sk[0]+'"/><stop offset="1" stop-color="'+sk[1]+'"/></linearGradient>'
+    +'<linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+se[0]+'"/><stop offset="1" stop-color="'+se[1]+'"/></linearGradient></defs>'
+    +'<rect width="400" height="190" fill="url(#sky)"/>'+sky
+    +'<rect y="106" width="400" height="84" fill="url(#sea)"/>'
+    +'<g class="wv1"><path d="'+wave+'" stroke="rgba(255,255,255,.35)" fill="none" stroke-width="1.5"/></g>'
+    +'<g class="wv2"><path d="'+wave2+'" stroke="rgba(255,255,255,.22)" fill="none" stroke-width="1.5"/></g>'
+    +'<path d="M0 118 C20 96 44 92 66 104 C80 90 106 88 128 104 C150 96 170 108 184 124 L0 134Z" fill="#244d33"/>'
+    +'<path d="M0 190 L0 140 C50 126 110 140 180 136 C250 132 320 142 400 134 L400 190Z" fill="#dcc48f"/>'
+    +'<path d="M0 190 L0 162 C80 152 160 164 260 158 C330 154 370 162 400 158 L400 190Z" fill="#cdb078" opacity=".6"/>'
+    +'<path d="M0 140 C50 126 110 140 180 136 C250 132 320 142 400 134" stroke="#fff" stroke-width="2" fill="none" opacity=".5"/>'
+    +palm(52,150,58)+palm(126,148,40)+props+'</svg>';
+}
+function renderScene(){$('scene').innerHTML=sceneSVG(curMood);}
+
+/* ---------- 介面 ---------- */
+function renderStats(){
+  $('stats').innerHTML=STATS.map(st=>{const v=Math.round(S[st.k]);
+    return '<div class="stat'+(v<25?' low':'')+'" style="--c:var('+st.c+')"><div class="stat-top"><span>'+st.n+'</span><b>'+v+'</b></div><div class="bar"><i style="width:'+v+'%"></i></div></div>';}).join('');
+  const t=$('dayTag');t.hidden=false;t.textContent='第 '+S.day+' 天';
+}
+function showDeltas(ds){
+  const box=$('deltas');box.innerHTML='';
+  ds.forEach(x=>{const s=document.createElement('span');s.className='chip '+(x.p?'prog':(x.d>0?'up':'down'));s.textContent=x.n+' '+(x.d>0?'+':'')+x.d;box.appendChild(s);});
+  clearTimeout(deltaT);deltaT=setTimeout(()=>{box.innerHTML='';},3400);
+}
+function fx(e){
+  const ds=[];
+  STATS.forEach(st=>{const v=e[st.k];if(!v)return;const b=S[st.k];S[st.k]=clamp(b+v);const d=S[st.k]-b;if(d)ds.push({n:st.n,d:d});});
+  Object.keys(PROG).forEach(k=>{const v=e[k];if(!v)return;const b=S.prog[k];S.prog[k]=clamp(b+v,0,PMAX[k]);const d=S.prog[k]-b;if(d)ds.push({n:PROG[k],d:d,p:true});});
+  showDeltas(ds);renderStats();renderScene();
+  return ds;
+}
+function setSpeaker(w){
+  const seal=$('seal');
+  if(w==='sun'){seal.className='seal sun';seal.textContent='策';$('who').textContent='孫策';}
+  else if(w==='me'){seal.className='seal me';seal.textContent='燕';$('who').textContent='劉燕';}
+  else{seal.className='seal nar';seal.textContent='述';$('who').textContent='旁白';}
+}
+function typeText(t,done){
+  clearInterval(typing);typing=null;fullText=t;typedDone=done;const el=$('text');
+  if(reduceMotion||t.length<3){el.textContent=t;typedDone=null;if(done)done();return;}
+  let i=0;el.textContent='';
+  typing=setInterval(()=>{i+=2;el.textContent=t.slice(0,i);
+    if(i>=t.length){clearInterval(typing);typing=null;const d=typedDone;typedDone=null;if(d)d();}},24);
+}
+function finishTyping(){
+  if(!typing)return;clearInterval(typing);typing=null;$('text').textContent=fullText;
+  const d=typedDone;typedDone=null;if(d)d();
+}
+function show(sc){
+  cur=sc;queue=(sc.lines||[]).slice();choicesShown=false;locked=false;currentChoices=[];
+  clearInterval(typing);typing=null;typedDone=null;
+  $('choices').innerHTML='';
+  if(sc.mood)curMood=sc.mood;
+  if(sc.onEnter)sc.onEnter();
+  renderScene();renderStats();
+  nextLine();
+}
+function nextLine(){
+  if(queue.length){
+    const l=queue.shift();setSpeaker(l[0]);$('more').hidden=true;
+    typeText(l[1],()=>{if(queue.length||!cur.choices)$('more').hidden=false;else showChoices(cur.choices);});
+    return;
+  }
+  finishLines();
+}
+function finishLines(){
+  if(cur.choices){showChoices(cur.choices);}
+  else advance(cur.then!==undefined?cur.then:(cur.defNext||'ACTIONS'));
+}
+function clickDialogue(){
+  if(choicesShown)return;
+  if(typing){finishTyping();return;}
+  if(locked)return;
+  nextLine();
+}
+function showChoices(list){
+  choicesShown=true;currentChoices=list;$('more').hidden=true;
+  const box=$('choices');box.innerHTML='';
+  list.forEach(ch=>{
+    const b=document.createElement('button');b.type='button';b.className='opt';
+    const l=document.createElement('span');l.className='l';l.textContent=ch.label;b.appendChild(l);
+    const sub=typeof ch.disabled==='string'?ch.disabled:ch.sub;
+    if(sub){const s=document.createElement('span');s.className='s';s.textContent=sub;b.appendChild(s);}
+    if(ch.disabled)b.disabled=true;
+    b.addEventListener('click',()=>choose(ch));
+    box.appendChild(b);
+  });
+  try{box.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'nearest'});}catch(e){}
+}
+function choose(ch){
+  if(locked||ch.disabled)return;locked=true;
+  $('choices').innerHTML='';
+  if(ch.fx)fx(ch.fx);
+  if(ch.set)Object.assign(S,ch.set);
+  const nx=ch.next!==undefined?ch.next:(cur.defNext||'ACTIONS');
+  if(ch.say)show({mood:cur.mood,lines:ch.say,then:nx});
+  else advance(nx);
+}
+function save(id){store.set(SAVE_KEY,{id:id,S:S});}
+function go(x){
+  let sc=x;
+  if(typeof x==='string'){
+    const f=SCENES[x];
+    if(!f){console.error('missing scene '+x);x='ACTIONS';sc=SCENES.ACTIONS();}
+    else sc=f();
+    if(SAVE_IDS[x])save(x);
+  }
+  show(sc);
+}
+function advance(n){
+  if(typeof n==='function')n=n();
+  if(n==='AFTER')n=afterAction();
+  else if(n==='DAWN')n=dawn();
+  if(typeof n==='string'&&n.indexOf('END:')===0)return endGame(n.slice(4));
+  const d=checkDeath();if(d)return endGame(d);
+  go(n===undefined?'ACTIONS':n);
+}
+
+/* ---------- 規則 ---------- */
+function checkDeath(){
+  let p=null;
+  if(S.water<=0)p='thirst';else if(S.hunger<=0)p='hunger';else if(S.stamina<=0)p='exhaust';else if(S.sanity<=0)p='mind';
+  const s=S.sunHp<=0;
+  if(!p&&!s)return null;
+  S.cause={p:p,s:(S.hunger<30||S.water<30)?'starve':(S.lastHarm||'wound')};
+  if(p&&s)return'bad_both';
+  if(p)return S.sunHp<=22?'bad_both':'bad_you';
+  return S.sanity<=22?'bad_both':'bad_sun';
+}
+const love=()=>S.affection>=LOVE;
+const settled=()=>S.prog.shelter>=2&&S.spring;
+const rescue=()=>S.ship||S.prog.raft>=4;
+function ready(){if(S.day>=16)return true;return love()?(settled()||rescue()):rescue();}
+function afterAction(){S.slot++;return S.slot>=2?'NIGHT':'ACTIONS';}
+function dawn(){
+  S.day++;S.slot=0;
+  const e={hunger:-10,water:-12,sanity:-3+(S.fire?2:-2)+(S.affection>=60?2:0),stamina:25+4*S.prog.shelter-(S.fire?0:6)};
+  if(S.hunger<25||S.water<25)e.sunHp=-4;else if(S.hunger>=45&&S.water>=45)e.sunHp=3;
+  fx(e);return'STORY';
+}
+function statusLines(){
+  if(S.water<25)return[N('喉嚨乾裂，連吞嚥都像在吞刀片。')];
+  if(S.hunger<25)return[N('胃裡空得發疼，眼前一陣陣發黑。')];
+  if(S.stamina<30)return[N('四肢沉得像灌了鉛，每走一步都要咬牙。')];
+  if(S.sanity<30)return[N('耳邊總像有人在低語，分不清是浪聲還是幻覺。')];
+  if(S.sunHp<30)return[N('孫策的臉色蒼白，他嘴上不說，你卻看得出他在硬撐。')];
+  return[N(pick(['海風帶著鹹味吹來，今天的天色還算平靜。','晨光落在沙灘上，浪聲一下一下，像在數著日子。']))];
+}
+
+/* ---------- 野獸 ---------- */
+const BEASTS={
+  boar:{danger:14,meat:26,intro:'一頭獠牙外翻的野豬從灌木裡衝了出來，眼睛通紅。'},
+  jackal:{danger:16,meat:14,intro:'三四雙發綠的眼睛在林影中亮起——是一群豺狼。'},
+  snake:{danger:8,meat:0,intro:'一條花紋斑斕的毒蛇昂起了頭，離你的腳踝只有一步。'},
+  tiger:{danger:30,meat:0,intro:'低沉的吼聲震得樹葉簌簌發抖——一頭吊睛白額的猛虎擋在前方。'}
+};
+function startBeast(kind,next){S.beast=kind;S.beastNext=next||'AFTER';return SCENES.BEAST();}
+SCENES.BEAST=()=>{
+  const b=BEASTS[S.beast]||BEASTS.boar;
+  return{mood:curMood==='night'?'day':curMood,lines:[N(b.intro),C('燕，退到我身後！')],choices:[
+    {label:'讓孫策正面迎擊',sub:'成敗取決於他的傷勢',next:()=>fight('front')},
+    {label:'我引開牠，讓孫策從側面下手',sub:'更容易成功，但我會冒險',next:()=>fight('lure')},
+    {label:'屏住呼吸，躲起來',sub:'也許牠會自己離開',next:()=>fight('hide')},
+    {label:'舉起火把驅趕',sub:S.fire?'火是野獸最怕的東西':'',disabled:S.fire?false:'需要先有火種',next:()=>fight('fire')}
+  ]};
+};
+const FL={
+  front:{win:[C('來得好！'),N('孫策猛然上前，一棍橫掃，正中要害。野獸慘叫一聲，倒了下去。')],
+         lose:[N('孫策迎了上去，卻被撞得連退數步，肩上的舊傷再次裂開。'),C('……可惡！'),N('他拼死逼退了牠，野獸倉皇逃進林中。')]},
+  lure:{win:[Y('這邊！看這邊！'),N('你高聲吸引牠的注意，孫策從側面一擊得手。'),C('漂亮！燕，你的膽子比我還大。')],
+        lose:[Y('這邊——啊！'),N('你被逼得跌坐在地，孫策拼死撲上，才把牠趕走，自己也掛了彩。')]},
+  hide:{win:[N('你們屏住呼吸，縮在樹叢後。野獸嗅了嗅四周，最終悻悻地離開了。'),Y('……走了。')],
+        lose:[N('野獸忽然轉頭，直直朝你們藏身的地方撲來！'),C('快跑！'),N('一陣混亂後，你們狼狽地甩開了牠。')]},
+  fire:{win:[N('你抓起燃燒的樹枝猛力揮舞，火光讓野獸退縮了。牠低吼幾聲，轉身消失在林中。'),C('哈，燕的法子，向來管用。')],
+        lose:[N('火光雖然逼退了牠，卻也讓牠發了狂。混亂中，孫策為了護著你，手臂被劃出一道血口。')]}
+};
+function fight(how){
+  const b=BEASTS[S.beast]||BEASTS.boar;
+  const base=clamp(.42+S.sunHp/220+(S.spear?.18:0)-(b.danger-14)/90,.12,.92);
+  let win,e;
+  if(how==='front'){win=chance(base);e=win?{sunHp:-Math.round(b.danger*.35),affection:3,hunger:b.meat,stamina:-4}:{sunHp:-(b.danger+6),stamina:-6,sanity:-6};}
+  else if(how==='lure'){win=chance(clamp(base+.14,.15,.95));e=win?{sunHp:-Math.round(b.danger*.25),affection:5,hunger:b.meat,stamina:-14,sanity:-4}:{sunHp:-Math.round(b.danger*.7),stamina:-14,sanity:-8};}
+  else if(how==='hide'){win=chance(b.danger>=30?.45:.58);e=win?{sanity:-5}:{stamina:-10,sunHp:-Math.round(b.danger*.55),sanity:-7};}
+  else{win=chance(b.danger>=30?.65:.88);e=win?{sanity:-3,stamina:-6}:{sunHp:-Math.round(b.danger*.4),stamina:-8,sanity:-5};}
+  if(!win&&e.sunHp)S.lastHarm='beast';
+  const L=FL[how][win?'win':'lose'].slice();
+  if(win&&b.meat>0&&(how==='front'||how==='lure'))L.push(N('你們帶回了新鮮的獵肉，今晚可以飽餐一頓。'));
+  fx(e);
+  return{mood:curMood,lines:L,then:S.beastNext};
+}
+
+/* ---------- 日間行動 ---------- */
+const TALKS=[
+  [C('燕，你知道我最想念什麼嗎？不是酒，也不是戰馬，是江東清晨的一碗粥。'),Y('等我們回去，我天天煮給你。'),C('哈，這話我可記下了。')],
+  [C('我小時候坐不住，母親總說：「伯符，你這性子，將來不是成大事，就是闖大禍。」'),Y('她說對了一半。'),C('哪一半？'),Y('闖大禍——你把我們弄到了荒島上。'),C('……這我認。')],
+  [Y('孫策，你怕不怕？'),C('怕。怕答應過的事沒做完。——不過有你在，倒沒那麼怕了。')],
+  [C('燕，你哼支曲子吧。聽不懂也沒關係，聽著心裡踏實。'),N('你哼起一支他從沒聽過的調子。他閉著眼，嘴角慢慢揚了起來。')],
+  [C('我在想，如果我不是孫策，只是個打魚的……'),Y('那你會是島上最吵的漁夫。'),C('哈哈，說得對。可那樣的日子，也不壞。')],
+  [C('你的手怎麼磨破了？拿來，我替你包上。'),N('他笨拙地撕下衣襬，一圈一圈纏在你掌心，纏得歪歪扭扭，卻很用力。')]
+];
+const ACT={
+  forage(){
+    const g=rand(14,22)+(S.grove?8:0);
+    const L=[N(pick(['你們沿著林緣翻找，採到了野莓、山芋與一把能吃的嫩葉。','孫策爬上矮樹，替你搖下一串酸澀的野果。','你在潮濕的樹根旁挖出幾塊根莖，洗淨後勉強能入口。']))];
+    if(S.grove)L.push(Y('果樹林就在附近，這趟收穫比之前多了。'));
+    fx({hunger:g,water:3,stamina:-10});
+    const sc={mood:'day',lines:L,then:'AFTER'};
+    if(chance(.18)){L.push(N('就在你彎腰的瞬間，草叢裡傳來「沙沙」的聲響——'));sc.then=()=>startBeast('snake','AFTER');}
+    return sc;
+  },
+  water(){
+    const w=rand(24,32)+(S.spring?14:0);
+    const L=[N(S.spring?'你們走到林間的清泉邊，用竹筒裝滿甘甜的泉水。':'你們收集葉面上的露水，又從石窪裡舀出昨夜的雨水，一點一點裝滿容器。')];
+    fx({water:w,stamina:-10});
+    return{mood:'day',lines:L,then:'AFTER'};
+  },
+  fish(){
+    let h=rand(14,22)+(S.spear?8:0)+(S.fire?6:0);
+    const L=[N('你們涉進淺灘，孫策用削尖的木棍叉魚，你在礁石間撿貝。')];
+    if(!S.fire){fx({sanity:-3});L.push(Y('沒有火，只能生吃……腥得我直反胃。'));h-=4;}
+    else L.push(N('魚在火上烤得滋滋作響，香氣讓你的肚子叫了起來。'));
+    fx({hunger:h,stamina:-12});
+    return{mood:'day',lines:L,then:'AFTER'};
+  },
+  hunt(){
+    const L=[N('孫策握緊削尖的木棍，示意你跟在他身後，兩人悄悄潛入林間。')];
+    if(chance(.5)){
+      const kind=(S.day>=8&&chance(.2))?'tiger':(chance(.65)?'boar':'jackal');
+      L.push(N('忽然，他抬手示意你停下——前方有動靜。'));
+      return{mood:'day',lines:L,then:()=>startBeast(kind,'AFTER')};
+    }
+    const h=rand(26,36)+(S.spear?6:0);
+    fx({hunger:h,affection:2,stamina:-20,sunHp:-4});
+    L.push(N('他看準時機，一擊得手。提著獵物回頭時，咧嘴笑得像個孩子。'),C('今晚有肉吃了！'));
+    return{mood:'day',lines:L,then:'AFTER'};
+  },
+  explore(){
+    S.explore++;const n=S.explore;
+    const L=[N('你們撥開藤蔓，朝小島深處走去。')];const e={stamina:-14};
+    if(n===1){S.grove=true;e.hunger=10;L.push(N('樹影深處，一片結滿野果的樹林出現在眼前。'),C('哈，老天總算賞了口飯。'),Y('以後採集可以來這裡了。'));}
+    else if(n===2){
+      if(!S.spring){S.spring=true;e.water=30;L.push(N('撥開一叢蕨類，你聽見了潺潺的水聲——一眼清泉從岩縫裡湧出。'),Y('是活水！我們不用再靠雨水了。'),C('燕，你的運氣真不錯。'));}
+      else{e.water=14;L.push(N('你們沿著溪流往深處探，在岩縫邊又發現了一處小水潭。'));}
+    }
+    else if(n===3){S.spear=true;e.raft=1;L.push(N('一片韌性極佳的野竹林立在山坡上。'),C('這竹子削尖了就是矛，捆起來就是筏。'),N('他砍下幾根粗竹，順手削了一支像樣的長矛。'));}
+    else{S.lookout=true;e.sanity=8;L.push(N('你們爬上島嶼最高的海崖，整片大海一覽無遺。'),Y('在這裡升起信號，遠處的船也許看得見。'),C('好眼光。這兒就是咱們的瞭望台。'));}
+    fx(e);
+    const sc={mood:'day',lines:L,then:'AFTER'};
+    if(chance(.2)){L.push(N('回程的路上，前方的灌木突然晃動——'));sc.then=()=>startBeast(pick(['boar','snake','jackal']),'AFTER');}
+    return sc;
+  },
+  talk(){
+    const t=TALKS[S.talks%TALKS.length];const g=S.talks<2?4:2;S.talks++;
+    fx({affection:g,sanity:8,stamina:-3});
+    return{mood:S.slot?'dusk':'day',lines:[N('你坐到孫策身邊，兩人望著海面閒聊。')].concat(t),then:'AFTER'};
+  },
+  rest(){
+    fx({stamina:28,sunHp:7,sanity:5,hunger:-4});
+    return{mood:S.slot?'dusk':'day',lines:[N(pick(['你們在樹蔭下歇了半天。你替孫策換了傷口的草藥，他假裝不疼，眉頭卻皺得死緊。','海風很涼，你靠著樹幹睡了一小覺。醒來時，身上多了一件他的外袍。']))],then:'AFTER'};
+  }
+};
+const BUILD_COST={shelter:16,signal:14,raft:16};
+function buildAct(kind){
+  fx({[kind]:1,stamina:-BUILD_COST[kind],hunger:-5});
+  const lv=S.prog[kind];
+  const T={
+    shelter:['你們砍來樹枝與棕櫚葉，在背風處搭起一座簡陋的窩棚。','窩棚加了第二層葉頂，風雨再也吹不進來了。','你們用泥土與石塊砌起矮牆，這座窩棚已有幾分家的模樣。'],
+    signal:['你們把乾柴與枯草堆成一座小山，等著有朝一日點燃。','信號堆又高了一圈，浸過油脂的樹皮鋪在最上層。','信號堆高得像座小塔，只要一把火，濃煙就能直衝雲霄。'],
+    raft:['孫策砍下粗竹與殘木，一根根平放在沙灘上。','竹筏的骨架成形了，你們用藤蔓一圈圈綁緊。','竹筏鋪上了橫板，已經能站人了。','最後一道縛繩勒緊。木筏終於像個樣子了。']
+  };
+  return{mood:'day',lines:[N(T[kind][Math.max(0,Math.min(lv-1,T[kind].length-1))]),C(pick(['別偷懶，再綁緊一點。','這手藝，不比軍營差。']))],then:'AFTER'};
+}
+SCENES.BUILD=()=>({mood:'day',lines:[N('要建設些什麼？')],choices:[
+  {label:'搭建庇護所',sub:'目前 '+S.prog.shelter+'／3　體力 -16',disabled:S.prog.shelter>=3?'已完成':(S.stamina<16?'體力不足':false),next:()=>buildAct('shelter')},
+  {label:'堆疊信號火堆',sub:'目前 '+S.prog.signal+'／3　體力 -14',disabled:S.prog.signal>=3?'已完成':(S.stamina<14?'體力不足':false),next:()=>buildAct('signal')},
+  {label:'紮製木筏',sub:'目前 '+S.prog.raft+'／4　體力 -16',disabled:S.prog.raft>=4?'已完成':(S.stamina<16?'體力不足':false),next:()=>buildAct('raft')},
+  {label:'返回',next:'ACTIONS'}
+]});
+SCENES.ACTIONS=()=>{
+  const slot=S.slot,st=S.stamina;
+  const lack=c=>st<c?'體力不足':false;
+  const L=[];
+  if(!S.tutor)L.push(N('每天有兩次「日間行動」，之後夜幕降臨，一天便結束。留意上方各項數值，任何一項歸零都可能致命。'));
+  L.push(N(slot?'日間行動（2／2）：日頭偏西了，還能再做一件事。':'日間行動（1／2）：今天要先做什麼？'));
+  return{mood:slot?'dusk':'day',lines:L,onEnter(){S.tutor=true;},choices:[
+    {label:'採集野果與野菜',sub:'飽食度 ↑　體力 -10',disabled:lack(10),next:()=>ACT.forage()},
+    {label:'尋找並汲取淡水',sub:'水分 ↑　體力 -10',disabled:lack(10),next:()=>ACT.water()},
+    {label:'到淺灘捕魚、撿貝',sub:'飽食度 ↑　體力 -12',disabled:lack(12),next:()=>ACT.fish()},
+    {label:'與孫策一起狩獵',sub:'收穫大，但可能遇上野獸　體力 -20',disabled:st<20?'體力不足':(S.sunHp<25?'孫策傷得太重':false),next:()=>ACT.hunt()},
+    {label:'探索小島',sub:S.explore>=4?'':'可能有新發現　體力 -14',disabled:S.explore>=4?'已探索完':lack(14),next:()=>ACT.explore()},
+    {label:'建設（居所／信號／木筏）',next:'BUILD'},
+    {label:'陪孫策說說話',sub:'好感度 ↑　精神 ↑',next:()=>ACT.talk()},
+    {label:'休息養傷',sub:'體力 ↑　孫策體況 ↑',next:()=>ACT.rest()}
+  ]};
+};
+
+/* ---------- 劇情 ---------- */
+SCENES.PROLOGUE=()=>({mood:'dawn',defNext:'ACTIONS',lines:[
+  N('建安五年，初夏。一場吞沒樓船的風暴過去，海面終於歸於平靜。'),
+  Y('嘴裡全是鹹澀的海水……我咳著醒來，整個人趴在滾燙的沙灘上。'),
+  N('不遠處，一個高大的男人半身浸在淺浪裡，肩頭的衣料被血染成暗紅。'),
+  Y('孫策……昏過去之前，我最後看見的，就是他死死拽住我的那隻手。'),
+  C('咳……劉燕？你醒了就好。別慌，我孫伯符沒那麼容易死。'),
+  C('只是這肩膀，被斷掉的桅杆劃了一道，有點疼罷了。'),
+  N('四下望去，只有白沙、礁石，以及一片望不見盡頭的叢林。沒有船，沒有人，也沒有炊煙。'),
+  Y('我們被沖到了一座荒島上。這裡只有野獸與資源，能不能活下去，全看接下來的選擇。')],
+  choices:[
+    {label:'先替他處理肩上的傷',fx:{affection:8,sunHp:8,stamina:-4},say:[Y('別動，我幫你包起來。'),N('你撕下乾淨的衣袖，用海水沖淨傷口，再一圈圈纏緊。他咬著牙，一聲沒吭，只是盯著你看了很久。'),C('……謝了。你這手藝，比軍醫還俐落。')]},
+    {label:'先到礁石邊找水',fx:{water:10,stamina:-6,sunHp:-4,affection:2},say:[Y('你坐著別動，我去找水。'),N('你在礁石縫裡找到一窪積著雨水的石坑，捧著喝了個飽，又小心地帶了些回去。'),C('嘿，行動比我還快。就是下次別把我一個人晾在這兒。')]},
+    {label:'讓他坐下，先一起商量對策',fx:{affection:5,sanity:4},say:[Y('先別逞強。我們得想清楚，接下來怎麼辦。'),C('哈，被你這麼一說，倒像我才是新兵。好，聽你的，先坐下。'),N('你們並肩坐在沙灘上，把能想到的事一件一件列出來：水、食物、火、藏身處。心裡忽然安定了不少。')]}
+  ]});
+
+function fireDrill(){
+  if(S.stamina>=35&&chance(.65)){
+    S.fire=true;fx({stamina:-12,affection:2});
+    return{mood:'dawn',lines:[N('你雙手磨出了水泡，終於，一縷細煙從木屑裡冒了出來。'),C('成了！燕，你再吹一口氣！'),Y('（輕輕一吹，火苗騰地竄起。）我們有火了。')],then:'ACTIONS'};
+  }
+  fx({stamina:-12,sanity:-4});
+  return{mood:'dawn',lines:[N('你磨得手心發紅，木頭卻只冒了點青煙就滅了。'),C('歇會兒，別把手磨廢了。這玩意講究火候，晚點再試。'),Y('……我不信邪。')],then:'ACTIONS'};
+}
+function stormResult(){
+  const sh=S.prog.shelter;const L=[];
+  if(sh>=2){fx({stamina:-4,sanity:-1,water:10});L.push(N('暴風雨如期而至，但厚實的窩棚紋絲不動。你們縮在裡面，聽雨水敲打葉頂，還接了不少乾淨的雨水。'));}
+  else if(sh>=1){fx({stamina:-10,sanity:-4,sunHp:-2,water:10});L.push(N('風雨灌進窩棚的縫隙，把兩人淋了個半濕。好在還撐得住，你們用容器接了不少雨水。'));}
+  else{fx({stamina:-20,sanity:-9,sunHp:-6,water:10});S.lastHarm='storm';L.push(N('暴風雨毫無遮擋地砸在身上，你們在礁石縫裡抱成一團，冷得牙關打顫。'),C('撐住……天亮就好了。'));}
+  return{mood:'storm',lines:L,then:'ACTIONS'};
+}
+function signalAttempt(kind){
+  const big=kind==='big';
+  const p=big?clamp(.38+.2*S.prog.signal+(S.lookout?.15:0),.38,.95):clamp(.15+(S.lookout?.1:0),.1,.4);
+  if(big)fx({stamina:-10});
+  if(chance(p)){
+    S.ship=true;fx({sanity:10,affection:2});
+    return{mood:'day',lines:[N(big?'你點燃信號堆，濃煙筆直地竄上天空，像一道黑色的狼煙。':'你在淺海裡拚命揮舞雙臂，喊到嗓子沙啞。'),N('遠處的帆影遲疑了一瞬——然後，緩緩轉過了船頭。'),C('他們看見了！燕，他們看見了！'),Y('（我們……有救了嗎？）')],then:'ACTIONS'};
+  }
+  fx({sanity:-8});
+  return{mood:'day',lines:[N(big?'濃煙升起，可風向不對，煙被吹向了島的另一側。':'你喊到聲嘶力竭，帆影卻只是越來越小。'),N('船，終究消失在海平線上。'),C('……會有下一艘的。我孫策不信老天會把路堵死。')],then:'ACTIONS'};
+}
+function argueResult(){
+  if(S.affection>=45){
+    fx({affection:8,sanity:-2});
+    return{mood:'day',lines:[C('你……'),N('他攥緊了拳，又慢慢鬆開，吐出一口長氣。'),C('是我急了。你說得對，我不能拿你的命去賭。'),Y('我們一起想辦法，好嗎？')],then:'ACTIONS'};
+  }
+  fx({affection:-5,sanity:-4});
+  return{mood:'day',lines:[C('怕死，就別跟我走！'),N('他轉身大步離去，留下你一個人站在海邊。直到傍晚，他才一聲不響地走回來。'),Y('（我們之間，好像隔了什麼。）')],then:'ACTIONS'};
+}
+
+const SPINE={
+  2:()=>({mood:'dawn',lines:[
+    N('夜裡的海風像刀子，兩個人背靠背縮在礁石縫裡，整夜沒睡安穩。'),
+    C('燕，你的嘴唇都紫了。沒有火不行——取暖是其一，野獸怕火是其二。'),
+    Y('可是……火種從哪裡來？我們身上什麼都沒有。')],
+    choices:[
+      {label:'學著鑽木取火',sub:'費力，也不一定成功',next:()=>fireDrill()},
+      {label:'請孫策用佩劍擊石取火',fx:{stamina:-4,affection:3},set:{fire:true},say:[C('哈！這把劍陪我砍過不少人，頭一回拿來點火。'),N('火星迸進枯草，一縷細煙升起。兩人屏息對望，忽然一起笑了出來。'),Y('……我們有火了。'),C('有火就有命。燕，你這主意不賴。')]},
+      {label:'先不管，省點力氣',fx:{stamina:6,sanity:-6,sunHp:-3},say:[N('你們決定先節省體力。一整個白天，寒意都沒有散去。'),C('……今晚，恐怕還是得想辦法。')]}
+    ]}),
+  3:()=>{const need=!S.fire;const L=[];
+    if(need)L.push(N('後半夜忽然雷聲大作，一道閃電劈中遠處的枯樹，枯枝燃起了火。你們冒雨搶下了火種，順手接了一整罐雨水。'));
+    L.push(N('天剛亮，營地外傳來窸窸窣窣的聲響——'));
+    return{mood:'dawn',lines:L,onEnter(){if(need){S.fire=true;fx({water:25});}},then:()=>startBeast('boar','ACTIONS')};},
+  4:()=>({mood:'day',lines:[
+    N('孫策的肩傷紅腫發燙，額頭燙得嚇人。他靠在樹下，卻還在硬撐著笑。'),
+    C('沒事……睡一覺就好。'),
+    Y('你都燒得說胡話了。這傷口再不處理，會要命的。')],
+    choices:[
+      {label:'煮水清洗傷口，敷上嚼爛的草藥',sub:S.fire?'有火，效果更好':'沒有火，效果打折',fx:{sunHp:S.fire?14:6,affection:4,water:-6,stamina:-6},say:[N('你把水煮沸放涼，一點一點擦淨膿血，再敷上從林子裡認出來的消炎草葉。'),C('……你怎麼知道這些？'),Y('先別說話，閉上眼睛。')]},
+      {label:'把自己的水省給他退燒',fx:{water:-14,sunHp:10,affection:7,sanity:-2},say:[N('你把僅有的清水一口一口餵給他，自己的嘴唇卻乾裂出血。'),C('傻子……你自己不喝？'),Y('你要是死了，我一個人在這島上有什麼意思。')]},
+      {label:'相信他說的「沒事」，讓他自己硬撐',fx:{sunHp:-12,affection:-4,stamina:4},set:{lastHarm:'wound'},say:[N('你選擇相信他說的「沒事」。但夜裡，你聽見他壓抑的悶哼聲。'),Y('（我是不是……做錯了？）')]}
+    ]}),
+  5:()=>({mood:'dusk',lines:[
+    N('傍晚，天邊堆起了鐵灰色的雲，海面開始湧起不安的長浪。'),
+    C('要變天了。今晚這場雨，恐怕小不了。'),
+    Y(S.prog.shelter>=1?'還好我們已經有個窩棚，只是不知道撐不撐得住。':'我們連個遮風擋雨的地方都沒有……')],
+    choices:[
+      {label:'趁天黑前，搭一座像樣的窩棚',sub:'體力 -14　居所 +1',fx:{stamina:-14,hunger:-4,shelter:1},next:()=>stormResult()},
+      {label:'躲進礁石縫，省點力氣',fx:{stamina:-4},next:()=>stormResult()},
+      {label:'趕在風雨前多採些野果',fx:{hunger:14,stamina:-10},next:()=>stormResult()}
+    ]}),
+  6:()=>({mood:'day',lines:[
+    N('一夜潮水，把一堆殘骸推上了沙灘——斷裂的船板、麻繩，還有半截桅杆。'),
+    C('這是我們那艘船的殘骸。燕，有了這些，能做的事可多了。'),
+    C('不過我先說好，我寧可乘風破浪，也不願在這島上腐朽。')],
+    choices:[
+      {label:'拆下木料，紮製木筏',sub:'木筏 +2',fx:{raft:2,stamina:-12},say:[N('你們把船板與麻繩拖到向海的一側，開始一根一根拼合。'),C('這才像話！')]},
+      {label:'用殘骸加固窩棚',sub:'居所 +1',fx:{shelter:1,stamina:-10,sanity:3},say:[N('船板做牆，麻繩作梁，窩棚頓時結實了許多。'),Y('至少下雨天，我們不用再淋雨了。')]},
+      {label:'用殘骸堆起信號堆',sub:'信號堆 +1',fx:{signal:1,stamina:-10,sanity:4},say:[N('你把殘骸與乾草高高堆在海崖邊。'),Y('有了它，也許有一天，路過的船會看見我們。'),C('……嗯，這法子倒是穩當。')]}
+    ]}),
+  7:()=>({mood:'day',lines:[
+    N('這天，孫策一邊磨著削尖的木棍，一邊像是隨口問起：'),
+    C('燕，我一直想問。你懂的那些法子——點火、煮水、辨草藥、做煙訊——不像尋常人家女子該會的。你究竟，是從哪兒來的？')],
+    choices:[
+      {label:'老實說：「我來自很遠的地方，遠到說了你也不信。」',fx:{affection:6,sanity:3},set:{honest:true},say:[C('……很遠？比江東還遠，比交州還遠？'),Y('比你能想到的任何地方，都要遠。'),C('哈。那你這一路，也不容易吧。往後在我面前，不必藏著掖著。')]},
+      {label:'笑著岔開話題',fx:{affection:2},say:[Y('等我們回去，我再慢慢說給你聽。'),C('行，我記著。你欠我一個故事。')]},
+      {label:'編個說得過去的身世',fx:{affection:-6,sanity:-3},say:[N('你順口編了個家道中落的故事。他聽完點點頭，沒有追問，眼神卻暗了一瞬。'),Y('（他好像……看出來了。）')]}
+    ]}),
+  8:()=>({mood:'day',lines:[
+    N('第八天正午，海平線上浮起一點白——不是浪花，是帆。'),
+    C('有船！燕，有船！'),
+    Y('它離這裡太遠了，除非有人看見我們……')],
+    choices:[
+      {label:'點燃信號堆，讓濃煙衝上天',sub:S.fire&&S.prog.signal>=1?'信號堆越高，越容易被看見':'',disabled:(S.fire&&S.prog.signal>=1)?false:'需要火種，且至少堆好一座信號堆',next:()=>signalAttempt('big')},
+      {label:'衝進淺海，拚命揮手呼喊',sub:'體力 -14',fx:{stamina:-14},next:()=>signalAttempt('wave')},
+      {label:'眼睜睜看著帆影遠去',fx:{sanity:-12},say:[N('你們站在沙灘上，看著那點白色漸漸縮小，最後什麼也不剩。'),C('……別這樣。船會再來的。')]}
+    ]}),
+  9:()=>({mood:'dusk',lines:[
+    N('第九天傍晚，你們去泉邊取水，濕泥上赫然印著臉盆大的爪印。'),
+    C('……是虎。'),
+    N('話音未落，灌木中傳來低沉的吼聲，一雙金黃色的眼睛，在暮色裡亮了起來。')],
+    then:()=>startBeast('tiger','ACTIONS')}),
+  10:()=>({mood:'day',lines:[
+    N('孫策站在海邊，望著遠方，一臉焦躁。'),
+    C('不能再等了。再耗下去，江東那邊以為我死了，公瑾他們撐不了多久。我們現在就造筏出海！'),
+    Y(S.prog.raft>=3?'木筏……已經做得差不多了，可是外海的風浪，不是鬧著玩的。':'木筏連一半都沒完成，現在出海，等於送死。')],
+    choices:[
+      {label:'支持他：「好，我們全力把木筏造好。」',fx:{affection:3,raft:1,stamina:-10,sanity:-3},say:[C('這才像話！'),N('你們一起砍竹、編繩，直到天黑。')]},
+      {label:'反對：「沒有萬全準備，會死在海上。」',next:()=>argueResult()},
+      {label:'折衷：「信號和木筏並行準備，兩條路都走。」',fx:{affection:4,raft:1,signal:1,stamina:-12},say:[C('……你總是想得比我周全。'),N('他沉默了一會兒，終於點頭。')]}
+    ]}),
+  11:()=>({mood:'dusk',lines:[
+    N('日子一天天過去，你卻發現自己越來越常坐在海邊發呆。夜裡閉上眼睛，總覺得船永遠不會來。'),
+    C('燕，你這幾天，話少得不像你。'),
+    Y('……')],
+    choices:[
+      {label:'坦白說出心裡的恐懼',fx:{affection:6,sanity:8},say:[Y('孫策，我怕。怕我們一輩子都回不去，怕有一天你先倒下了，只剩我一個人。'),C('傻瓜。'),N('他伸手，把你的頭輕輕按在肩上。'),C('只要我還有一口氣，就不會讓你一個人。')]},
+      {label:'強撐著笑，說自己沒事',fx:{sanity:-7,affection:1},say:[Y('沒事，只是有點累。'),C('……是嗎。'),N('他看了你很久，沒有拆穿，只是把火撥得更旺了一些。')]},
+      {label:'一個人走到海邊靜一靜',fx:{sanity:-4,stamina:-6},say:[N('你在浪邊坐了很久，直到月亮升到頭頂。'),N('身後傳來腳步聲，孫策把外袍披在你肩上，什麼也沒問，在你身旁坐下。')]}
+    ]})
+};
+
+const NIGHTS={
+  2:()=>({mood:'night',defNext:'DAWN',lines:[
+    N(S.fire?'篝火劈啪作響，火光在孫策臉上明明滅滅。他望著火，忽然開口：':'沒有火的夜裡，他仍靠著樹幹，斷斷續續地說起往事：'),
+    C('我父親孫堅死在襄陽那年，我才十七歲。帶著他的舊部，只有幾百人，連飯都吃不飽。'),
+    C('後來公瑾來了，把自家宅子讓給我住，說：「伯符，這江東，你拿得下來。」'),
+    C('所以我總覺得，沒有熬不過去的絕境。燕，你信不信？')],
+    choices:[
+      {label:'「我信。因為你不是一個人。」',fx:{affection:6,sanity:5},say:[C('……哈，這話說得，我心口都熱了。'),N('他沒有再說什麼，只是把火撥得更旺了一些。')]},
+      {label:'「說說你打過最驚險的一仗吧。」',fx:{affection:4,sanity:3},say:[C('那可就說來話長了——那年渡江，我們只有一條船……'),N('他講得眉飛色舞，你聽著聽著，竟忘了身在荒島。')]},
+      {label:'「別說了，快睡吧，明天還要幹活。」',fx:{affection:1,stamina:4},say:[C('嘖，你可真是個無趣的人。'),N('他嘴上抱怨，卻乖乖躺下了。')]}
+    ]}),
+  4:()=>({mood:'night',defNext:'DAWN',lines:[
+    N(S.fire?'夜深了，火堆只剩一團暗紅。孫策靠著樹幹，忽然低聲開口：':'夜很深，孫策靠著樹幹，忽然低聲開口：'),
+    C('燕，你為什麼對我這麼好？我們不過是一同落難的人。'),
+    N('他說這話時沒有看你，只是望著黑沉沉的海面。')],
+    choices:[
+      {label:'「因為我們是同一條船上的人。」',fx:{affection:3,sanity:2},say:[C('……是啊，同一條船。'),N('他笑了笑，笑意卻淡了些。')]},
+      {label:'「因為我不想你死。」',fx:{affection:7,sanity:-2},say:[N('話一出口，連你自己都愣住了。'),C('……'),C('我孫伯符，這輩子被許多人效忠過，倒是頭一回有人這樣說。'),N('他別過臉去，耳根在火光裡有些發紅。')]},
+      {label:'「你還欠我一頓好酒，要活著還。」',fx:{affection:4,sanity:3},say:[C('哈哈哈，好！這債我認了，回了江東，連喝三天三夜！'),N('他笑得肩膀直顫，笑聲在夜裡傳得很遠。')]}
+    ]}),
+  6:()=>({mood:'night',defNext:'DAWN',lines:[
+    N('這一夜無雲，滿天星斗低得像要落進海裡。'),
+    C('燕，你看，那是北斗。老人們說，星象主天命，誰當王，誰該敗，都寫在天上。'),
+    C('可我偏不信。我的命，只能由我自己來定。')],
+    choices:[
+      {label:'靠過去，和他一起看星星',fx:{affection:6,sanity:5},say:[N('你挪到他身旁。肩並著肩，誰也沒有說話。'),C('……這樣看，天好像也沒那麼高。')]},
+      {label:'「也許天命，就是讓我們在這裡遇見。」',fx:{affection:5,sanity:4},say:[C('你這話……說得倒像個老神棍。'),N('他嘴上取笑，卻把這句話默默聽了進去。')]},
+      {label:'「我有點冷。」',fx:{affection:4,stamina:3},say:[N('他二話不說，脫下外袍披在你肩上。'),C('冷怎麼不早說。')]}
+    ]}),
+  8:()=>({mood:'night',defNext:'DAWN',lines:S.ship?[
+    N('夜裡，你們都睡不著。那艘船帶來的希望，讓整座島都輕了幾分。'),
+    C('燕，如果……真的能回去，你打算怎麼辦？')]:[
+    N('夜裡，你一直望著黑沉沉的海面。帆影遠去之後，連浪聲都顯得空洞。'),
+    C('別這樣。船會再來的。就算不來，我造也要造一艘出去。'),
+    C('燕，如果……真的能回去，你打算怎麼辦？')],
+    choices:[
+      {label:'「跟著你，去哪都行。」',fx:{affection:6,sanity:4},say:[C('……這話可別隨便說。我會當真的。'),N('他的聲音很輕，被浪聲蓋過去了一半。')]},
+      {label:'「我想先好好睡一覺。」',fx:{affection:2,stamina:6},say:[C('哈，沒出息。睡吧，我守著。')]},
+      {label:'「我怕回去之後，一切都不一樣了。」',fx:{affection:4,sanity:3},say:[C('會不一樣的。但有些東西，不會變。'),N('他沒說是什麼，你也沒有再問。')]}
+    ]}),
+  10:()=>({mood:'night',defNext:'DAWN',lines:[
+    N('白天的爭執像一根細刺，卡在兩人之間。夜裡，孫策主動挪到你身邊。'),
+    C('燕，白天的事，是我性子急了。'),
+    C('我只是……不想再讓你在這座島上多受一天苦。')],
+    choices:[
+      {label:'「我明白。我們一起想辦法。」',fx:{affection:6,sanity:4},say:[C('嗯。一起。'),N('他伸手，笨拙地替你把頭髮別到耳後。')]},
+      {label:'「下次先聽我把話說完。」',fx:{affection:4},say:[C('行，下次，我先聽。')]},
+      {label:'「那你得賠我一頓酒。」',fx:{affection:4,sanity:3},say:[C('哈哈，又是酒！好，賠，賠你十壇。')]}
+    ]})
+};
+function ambientNight(){
+  const L=[];
+  if(S.fire)L.push(N(pick(['篝火劈啪作響。孫策添了最後幾根柴，說天亮還要去找水。','火光映著兩個人的影子。浪聲一陣陣漫上來，又退下去。'])));
+  else L.push(N('沒有火的夜晚格外漫長，兩人背靠背縮著，聽著遠處不知名的獸吼。'));
+  if(S.affection>=60)L.push(C(pick(['燕，睡吧。今晚我守著。','別怕，有我在。'])));
+  return{mood:'night',lines:L,then:'DAWN'};
+}
+SCENES.NIGHT=()=>{const f=NIGHTS[S.day];return f?f():ambientNight();};
+
+SCENES.FREE=()=>{
+  const L=[N(S.day===12?'第十二天。你們望著空蕩蕩的海面，明白還需要更多準備，才能真正離開這座島。':'又是平靜而漫長的一天。')];
+  if(!S.ship&&S.fire&&S.prog.signal>=1&&chance(.4)){
+    L.push(N('正午，遠方海平線上又出現了一點白帆！'));
+    return{mood:'day',lines:L,choices:[
+      {label:'點燃信號堆',next:()=>signalAttempt('big')},
+      {label:'衝進淺海呼喊',sub:'體力 -14',fx:{stamina:-14},next:()=>signalAttempt('wave')},
+      {label:'來不及了，放棄',fx:{sanity:-6},say:[N('帆影遠去。你們沉默地站在海邊。')]}
+    ]};
+  }
+  if(chance(.3)){L.push(N('不遠處的灌木忽然晃動——'));return{mood:'day',lines:L,then:()=>startBeast(pick(['boar','jackal','snake']),'ACTIONS')};}
+  if(chance(.3)){L.push(N('午後下了一場短雨，你們接了不少乾淨的雨水。'));return{mood:'storm',lines:L,onEnter(){fx({water:15,sanity:2});},then:'ACTIONS'};}
+  L.push(C(pick(['再撐一撐，我們一定能走出這座島。','今天的海，看起來比昨天平靜些。'])));
+  return{mood:'day',lines:L,then:'ACTIONS'};
+};
+
+SCENES.CLIMAX=()=>{
+  const lv=love(),st=settled(),raft=S.prog.raft>=4;
+  const forced=S.day>=16&&!rescue();
+  const resc=rescue()||forced;
+  const canWait=S.day<16;
+  const L=[];
+  if(forced)L.push(N('第十六天。就在你們幾乎要放棄的時候，海平線上，終於出現了一抹真正朝這裡駛來的帆影。'));
+  else if(S.ship)L.push(N('海平線上，那艘曾經遠去的帆影又出現了——這一次，它正朝著小島穩穩駛來。'));
+  else if(raft)L.push(N('最後一道縛繩勒緊。你們一起把木筏推進淺水，它穩穩地浮在浪上。'));
+  else L.push(N('第十二天。這座島，已經被你們一點一點，變成了一個勉強能稱為「家」的地方。'));
+  let choices;
+  if(!lv){
+    L.push(C('終於……能回去了。'),Y('是啊。'),C('燕，這些日子，多謝你。'),N('他說得很誠懇，卻像在對一位並肩作戰的同袍道別。'));
+    choices=[{label:'登上船，離開小島',next:'END:neutral_ship'}];
+    if(canWait)choices.push({label:'再多留幾天',sub:'也許還有別的可能',next:'ACTIONS'});
+  }else{
+    L.push(C('燕。這些天，我一直在想一件事。'),C('我這一生打過許多仗，也失去過許多人，本以為什麼都不怕了。'),C('可在這座島上，我最怕的，是你出事。'),Y('孫策……'),C('我孫伯符不愛說軟話，只問你一句——往後的路，你想怎麼走？'));
+    choices=[
+      {label:'留下來，在這座島上一起生活',disabled:st?false:'還沒有安穩的居所與水源',next:'END:good_stay'},
+      {label:'和他一起離開小島',disabled:resc?false:'還沒有可以離開的辦法',next:'END:good_leave'}
+    ];
+    if(canWait&&(!st||!resc))choices.push({label:'再多準備幾天',next:'ACTIONS'});
+  }
+  return{mood:'dusk',lines:L,choices:choices,onEnter(){if(forced)S.ship=true;}};
+};
+SCENES.STORY=()=>{
+  const d=S.day;let sc;
+  if(d>=12)sc=ready()?SCENES.CLIMAX():SCENES.FREE();
+  else sc=SPINE[d]();
+  sc.lines=statusLines().concat(sc.lines);
+  return sc;
+};
+
+/* ---------- 結局 ---------- */
+const ENDINGS={
+  good_stay:{kind:'good',tag:'好結局',title:'海島為家',body:()=>[
+    '那一天，海面上真的有帆影。孫策站在浪邊望了很久，轉身時，眼裡卻沒有半分遲疑。',
+    '「我孫伯符這輩子，向來是往前衝的。」他笑著牽起你的手，「可這一回，我想往你身邊走。」',
+    '帆影漸漸遠去。你們回到自己搭起的屋子前，他把那柄陪了他半生的佩劍插進沙地，說：「這裡不需要將軍，只需要一個會生火的人。」',
+    '後來，小島有了炊煙，有了菜畦，有了每晚在潮聲裡說不完的話。江東的史書裡再也找不到「小霸王」的結局，只有漁人口耳相傳的故事——說海上有座無名的島，島上住著一對不問天下的人。']},
+  good_leave:{kind:'good',tag:'好結局',title:'同舟共渡',body:()=>[
+    (S.ship?'那艘船載著你們':'你們把木筏推進浪裡，扯起帆布，')+'駛離了小島。孫策一直握著你的手，沒有回頭。',
+    '「怕嗎？」他問。「不怕。」你答，「因為這一次，我知道要往哪裡去。」',
+    '回到江東那天，他當著周瑜與眾將的面，把你拉到身旁：「這位是劉燕。沒有她，孫伯符早已埋骨荒島。」',
+    '亂世未央，風浪猶在。但從此以後，無論前路是征戰還是歸隱，你都不再是一個人。']},
+  neutral_ship:{kind:'neutral',tag:'中立結局',title:'帆影',body:()=>[
+    (S.prog.raft>=4&&!S.ship?'你們漂流了兩天，被一艘路過的漁船救起。':'船來了。水手們七手八腳把兩個形容憔悴的人拉上甲板，有人驚呼：「是……是主公！」'),
+    '孫策被迎回了江東，肩上的疤，後來成了他征戰時最常被人提起的故事。你在碼頭與他分別。',
+    S.affection>=40?'他走出幾步，忽然回頭，隔著人群望了你很久，最後只是抬手，朝你揮了揮。':'他謝過你的照顧，客氣得像對待一位並肩的同袍，然後轉身，沒有再回頭。',
+    '那段日子像退潮後的腳印，被時間一點一點抹平。只是偶爾，在潮聲很大的夜裡，你還會想起那座島，和火光裡那個爽朗的笑。']},
+  bad_sun:{kind:'bad',tag:'壞結局',title:'英雄殞落',body:()=>{
+    const m={beast:'那頭野獸留下的傷口，終究沒能撐過去。',starve:'飢渴與傷勢一起，拖垮了他。',storm:'風雨裡落下的舊傷，終究沒能熬過去。',wound:'傷口惡化，高熱始終沒有退下。'};
+    return['……他倒在你的懷裡，血把你的衣袖染得溫熱，又慢慢涼了下去。',
+      (m[S.cause&&S.cause.s]||m.wound),
+      '「別哭，燕。」他最後還在笑，「這島上……沒人看得見英雄流淚。」',
+      '三天後，船來了。你抱著他的佩劍，是唯一的生還者。史書只記下一行：「策以創死。」沒有人知道，他死在一座無名的荒島上，死在一個人的懷裡。'];}},
+  bad_you:{kind:'bad',tag:'壞結局',title:'潮聲',body:()=>{
+    const m={thirst:'喉嚨乾裂，你最後的意識，是孫策把水囊塞到你嘴邊——可它早已空了。',hunger:'飢餓一點一點抽走了你的力氣。你靠在他肩上，說想睡一會兒。',exhaust:'你太累了。累到連他喊你名字的聲音，都漸漸遠成了浪聲。',mind:'黑夜裡，你一步步走向海，浪聲像是有人在輕輕喚你。孫策衝進浪裡時，已經太遲了。'};
+    return[(m[S.cause&&S.cause.p]||m.exhaust),
+      '他獨自把你葬在椰樹下，用那把劍在樹幹上刻了一個「燕」字。',
+      '後來他活著回到江東，位列諸侯，卻再也不曾提起那座島。只是每逢海風起時，他總會望向很遠的地方，沉默很久。'];}},
+  bad_both:{kind:'bad',tag:'壞結局',title:'同歸於海',body:()=>[
+    '你們彼此依靠著，誰也沒有力氣再站起來。',
+    '「燕……」他的聲音很輕，「下輩子……換我先找到你。」',
+    '潮水漫過腳邊，海鷗在頭頂盤旋。多年後，有漁人在沙灘上發現兩具相依的遺骨，和一柄鏽蝕的長劍。無人知曉他們是誰，只有潮聲，年復一年，輕輕地唱。']}
+};
+function endGame(id){
+  if(S.over)return;S.over=true;endedId=id;store.del(SAVE_KEY);
+  clearInterval(typing);typing=null;
+  const ends=store.get(END_KEY)||{};ends[id]=true;store.set(END_KEY,ends);
+  renderEnding(id,ends);screen('end');
+}
+function renderEnding(id,ends){
+  const e=ENDINGS[id];
+  const tag=$('endTag');tag.className='tag '+e.kind;tag.textContent=e.tag;
+  $('endTitle').textContent=e.title;
+  $('endBody').innerHTML='';
+  e.body().forEach(t=>{const p=document.createElement('p');p.textContent=t;$('endBody').appendChild(p);});
+  const sum=$('endSum');sum.innerHTML='';
+  const items=['撐過 '+S.day+' 天'].concat(STATS.map(st=>st.n+' '+Math.round(S[st.k])));
+  items.forEach(t=>{const c=document.createElement('span');c.className='chip';c.textContent=t;sum.appendChild(c);});
+  const n=ENDS_ORDER.filter(k=>ends[k]).length;
+  $('endCount').textContent='已解鎖結局 '+n+'／'+ENDS_ORDER.length;
+}
+function renderGallery(){
+  const ends=store.get(END_KEY)||{};const box=$('galList');box.innerHTML='';
+  ENDS_ORDER.forEach(k=>{
+    const e=ENDINGS[k],on=!!ends[k];
+    const d=document.createElement('div');d.className='gi'+(on?' on '+e.kind:'');
+    const b=document.createElement('b');b.textContent=on?e.title:'？？？';
+    const s=document.createElement('span');s.textContent=on?e.tag:'尚未解鎖';
+    d.appendChild(b);d.appendChild(s);box.appendChild(d);
+  });
+}
+
+/* ---------- 畫面切換與流程 ---------- */
+function screen(name){
+  $('screen-title').hidden=name!=='title';
+  $('screen-game').hidden=name!=='game';
+  $('screen-end').hidden=name!=='end';
+  if(name==='title')$('dayTag').hidden=true;
+  closeOv();window.scrollTo(0,0);
+}
+function openOv(id){$(id).hidden=false;}
+function closeOv(){$('menuOv').hidden=true;$('galOv').hidden=true;restartArmed=false;$('mRestart').textContent='重新開始';}
+function toTitle(){
+  $('btnContinue').hidden=!store.get(SAVE_KEY);
+  $('heroArt').innerHTML=sceneSVG('dusk',{fire:true,shelter:1,h:230});
+  screen('title');
+}
+function startNew(){
+  S=newState();store.del(SAVE_KEY);endedId=null;curMood='dawn';
+  screen('game');go('PROLOGUE');
+}
+function resume(){
+  const sv=store.get(SAVE_KEY);if(!sv||!sv.S){startNew();return;}
+  S=Object.assign(newState(),sv.S);S.prog=Object.assign({shelter:0,signal:0,raft:0},sv.S.prog||{});S.over=false;
+  screen('game');go(SCENES[sv.id]?sv.id:'ACTIONS');
+}
+$('btnStart').addEventListener('click',startNew);
+$('btnContinue').addEventListener('click',resume);
+$('btnGallery').addEventListener('click',()=>{renderGallery();openOv('galOv');});
+$('btnAgain').addEventListener('click',startNew);
+$('btnEndGallery').addEventListener('click',()=>{renderGallery();openOv('galOv');});
+$('btnEndTitle').addEventListener('click',toTitle);
+$('menuBtn').addEventListener('click',()=>openOv('menuOv'));
+$('mClose').addEventListener('click',closeOv);
+$('galClose').addEventListener('click',closeOv);
+$('mTitle').addEventListener('click',toTitle);
+$('mGallery').addEventListener('click',()=>{$('menuOv').hidden=true;renderGallery();openOv('galOv');});
+$('mRestart').addEventListener('click',()=>{
+  if(!restartArmed){restartArmed=true;$('mRestart').textContent='再按一次，確認重新開始';return;}
+  startNew();
+});
+['menuOv','galOv'].forEach(id=>$(id).addEventListener('click',e=>{if(e.target===$(id))closeOv();}));
+$('dialogue').addEventListener('click',clickDialogue);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeOv();return;}
+  if((e.key==='Enter'||e.key===' ')&&document.activeElement===$('dialogue')){e.preventDefault();clickDialogue();}
+});
+
+if(window.__CE_TEST__){
+  window.__CE_TEST__.api={
+    get S(){return S;},get choices(){return currentChoices;},get shown(){return choicesShown;},get ended(){return endedId;},
+    choose:choose,click:clickDialogue,startNew:startNew,SCENES:SCENES,go:go
+  };
+}
+store.get(SAVE_KEY);store.get(END_KEY); // 開啟時順便清掉過期資料
+toTitle();
+})();
+</script>
+</body>
+</html>
